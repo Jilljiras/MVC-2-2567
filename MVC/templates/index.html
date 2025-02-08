@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+</head>
+<body>
+    <h1>AI Chatbot</h1>
+    <form id="category-form">
+        <label for="category">Choose a category: </label>
+        <select id="category" name="category">
+            <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
+            <option value="เชิงอารมณ์">เชิงอารมณ์</option>
+            <option value="ความรู้ทั่วไป">ความรู้ทั่วไป</option>
+        </select>
+        <button type="submit">Ask</button>
+    </form>
+
+    <h3 id="question">Question: </h3>
+    <h4 id="answer">Answer: </h4>
+    <p id="emotion">Emotion: </p>
+    <p id="total-average">Total Average: </p>
+    <p id="science-average">Science Average: </p>
+    <p id="general-knowledge-average">General Knowledge Average: </p>
+    <p id="emotion-average">Emotion Average: </p>
+
+    <script>
+        document.getElementById('category-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // ป้องกันการส่งแบบฟอร์ม
+
+            const category = document.getElementById('category').value;
+
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `category=${category}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response from server:", data);
+
+                // แสดงผลคำถาม, คำตอบ, อารมณ์ และค่าเฉลี่ย
+                document.getElementById('question').textContent = "Question: " + data.question;
+                document.getElementById('answer').textContent = "Answer: " + data.answer;
+                document.getElementById('emotion').textContent = "Emotion: " + data.emotion + '%';
+                document.getElementById('total-average').textContent = "Total Average: " + data.average_emotions.total_average.toFixed(2);
+                document.getElementById('science-average').textContent = "Science Average: " + data.average_emotions.science_average.toFixed(2);
+                document.getElementById('general-knowledge-average').textContent = "General Knowledge Average: " + data.average_emotions.general_knowledge_average.toFixed(2);
+                document.getElementById('emotion-average').textContent = "Emotion Average: " + data.average_emotions.emotion_average.toFixed(2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
